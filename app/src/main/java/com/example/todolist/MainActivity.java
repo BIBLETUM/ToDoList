@@ -1,7 +1,9 @@
 package com.example.todolist;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,11 +35,37 @@ public class MainActivity extends AppCompatActivity {
         notesAdapter.setOnNoteClickListener(new NotesAdapter.OnNoteClickListener() {
             @Override
             public void onNoteClick(Note note) {
-                dataBase.remove(note.getId());
-                showNotes();
+//                dataBase.remove(note.getId());
+//                showNotes();
             }
         });
 
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(
+                new ItemTouchHelper.SimpleCallback(
+                        0,
+                        ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT
+                ) {
+                    @Override
+                    public boolean onMove(
+                            @NonNull RecyclerView recyclerView,
+                            @NonNull RecyclerView.ViewHolder viewHolder,
+                            @NonNull RecyclerView.ViewHolder target
+                    ) {
+                        return false;
+                    }
+
+                    @Override
+                    public void onSwiped(
+                            @NonNull RecyclerView.ViewHolder viewHolder,
+                            int direction
+                    ) {
+                        int position = viewHolder.getAdapterPosition();
+                        Note note = notesAdapter.getNotes().get(position);
+                        dataBase.remove(note.getId());
+                        showNotes();
+                    }
+                });
+        itemTouchHelper.attachToRecyclerView(recyclerViewNotes);
 
         buttonAddNote.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,18 +76,19 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
     @Override
     protected void onResume() {
         showNotes();
         super.onResume();
     }
 
-    private void initViews(){
+    private void initViews() {
         recyclerViewNotes = findViewById(R.id.recyclerViewNotes);
         buttonAddNote = findViewById(R.id.buttonAddNote);
     }
 
-    private void showNotes(){
+    private void showNotes() {
         notesAdapter.setNotes(dataBase.getNotes());
 
     }
