@@ -14,10 +14,10 @@ import java.util.List;
 
 public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteViewHolder> {
 
-    private ArrayList<Note> notes = new ArrayList<Note>();
+    private List<Note> notes = new ArrayList<Note>();
     private OnNoteClickListener onNoteClickListener;
 
-    public ArrayList<Note> getNotes() {
+    public List<Note> getNotes() {
         return new ArrayList<Note>(notes);
     }
 
@@ -25,7 +25,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteViewHold
         this.onNoteClickListener = onNoteClickListener;
     }
 
-    public void setNotes(ArrayList<Note> notes) {
+    public void setNotes(List<Note> notes) {
         this.notes = notes;
         notifyDataSetChanged();
     }

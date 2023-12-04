@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 
 public class AddNoteActivity extends AppCompatActivity {
-    private DataBase dataBase = DataBase.getInstance();
+    private NoteDataBase noteDataBase = NoteDataBase.getInstance(getApplication());
     private EditText textViewNoteText;
     private RadioButton radioButtonLow;
     private RadioButton radioButtonMedium;
@@ -56,9 +56,9 @@ public class AddNoteActivity extends AppCompatActivity {
             ).show();
         } else {
             int priority = getPriority();
-            int id = dataBase.getNotes().size();
+            int id = noteDataBase.notesDao().getNotes().size();
             Note note = new Note(id, priority, text);
-            dataBase.add(note);
+            noteDataBase.notesDao().add(note);
 
             finish();
         }
