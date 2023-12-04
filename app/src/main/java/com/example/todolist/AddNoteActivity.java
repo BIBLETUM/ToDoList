@@ -1,6 +1,8 @@
 package com.example.todolist;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,13 +16,14 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import java.util.List;
+
 
 public class AddNoteActivity extends AppCompatActivity {
-    private NoteDataBase noteDataBase = NoteDataBase.getInstance(getApplication());
     private EditText textViewNoteText;
     private RadioButton radioButtonLow;
     private RadioButton radioButtonMedium;
-    private Handler handler = new Handler(Looper.getMainLooper());
+    private AddNoteViewModel addNoteViewModel;
     private RadioButton radioButtonHigh;
     private Button buttonSave;
 
@@ -31,6 +34,15 @@ public class AddNoteActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_note);
         initViews();
 
+        addNoteViewModel = new ViewModelProvider(this).get(AddNoteViewModel.class);
+
+        addNoteViewModel.getShouldCloseScreen().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean shouldClose) {
+                if(shouldClose)
+                    finish();
+            }
+        });
 
         buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -38,7 +50,6 @@ public class AddNoteActivity extends AppCompatActivity {
                 saveNote();
             }
         });
-
     }
 
     public void initViews() {
@@ -60,19 +71,7 @@ public class AddNoteActivity extends AppCompatActivity {
         } else {
             int priority = getPriority();
             Note note = new Note(priority, text);
-            Thread thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    noteDataBase.notesDao().add(note);
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            finish();
-                        }
-                    });
-                }
-            });
-            thread.start();
+            addNoteViewModel.addNote(note);
         }
     }
 
